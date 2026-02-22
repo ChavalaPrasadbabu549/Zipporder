@@ -1,4 +1,4 @@
-import { PasswordValidationResult } from '../types';
+import { PasswordValidationResult, FormFieldConfig } from '../types';
 
 
 export const isValidEmail = (email: string): boolean => {
@@ -34,4 +34,40 @@ export const validatePassword = (password: string): PasswordValidationResult => 
 
 export const isRequired = (value: string): boolean => {
     return value.trim().length > 0;
+};
+
+export const validateForm = (
+    values: Record<string, string>,
+    fields: FormFieldConfig[]
+): Record<string, string> => {
+    const errors: Record<string, string> = {};
+
+    fields.forEach((field) => {
+        const value = values[field.name];
+
+        // Check for required field
+        if (field.required && (!value || !isRequired(value))) {
+            errors[field.name] = `${field.label} is required`;
+            return;
+        }
+
+        if (value) {
+            // Check for valid email
+            if (field.type === 'email' && !isValidEmail(value)) {
+                errors[field.name] = 'Please enter a valid email address';
+            }
+
+            // Check for password length (basic check)
+            if (field.type === 'password' && value.length < 6) {
+                errors[field.name] = 'Password must be at least 6 characters';
+            }
+
+            // Check for confirm password match
+            if (field.name === 'confirmPassword' && value !== values.password) {
+                errors[field.name] = 'Passwords do not match';
+            }
+        }
+    });
+
+    return errors;
 };

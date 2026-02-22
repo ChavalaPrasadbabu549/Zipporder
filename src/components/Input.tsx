@@ -83,6 +83,7 @@ const styles = StyleSheet.create({
         borderRadius: 7,
         borderWidth: 1,
         paddingHorizontal: 16,
+        height: 50,
     },
     input: {
         flex: 1,

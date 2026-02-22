@@ -7,7 +7,8 @@ const Button: React.FC<ButtonProps> = ({
     onPress,
     variant = 'primary',
     disabled = false,
-    style
+    style,
+    textStyle
 }) => {
     const getButtonStyle = (): ViewStyle => {
         const baseStyle = styles.button;
@@ -38,7 +39,7 @@ const Button: React.FC<ButtonProps> = ({
             disabled={disabled}
             activeOpacity={0.7}
         >
-            <Text style={getTextStyle()}>{title}</Text>
+            <Text style={[getTextStyle(), textStyle]}>{title}</Text>
         </TouchableOpacity>
     );
 };

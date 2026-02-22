@@ -12,10 +12,8 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/types';
 import { useAuth, useTheme } from '../context';
 import ThemeText from '../components/Text';
-import { DynamicForm } from '../components';
-import { isValidEmail } from '../utils/validators';
-import { registerFields } from '../utils';
-import { ActivityIndicator } from 'react-native';
+import { DynamicForm, Button } from '../components';
+import { registerFields, validateForm } from '../utils';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
 
@@ -44,52 +42,15 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     };
 
     const validate = () => {
-        let isValid = true;
-        const errors: Record<string, string> = {};
-
-        if (!formValues.name) {
-            errors.name = 'Name is required';
-            isValid = false;
-        }
-
-        if (!formValues.email) {
-            errors.email = 'Email is required';
-            isValid = false;
-        } else if (!isValidEmail(formValues.email)) {
-            errors.email = 'Please enter a valid email';
-            isValid = false;
-        }
-
-        if (!formValues.phone) {
-            errors.phone = 'Phone number is required';
-            isValid = false;
-        }
-
-        if (!formValues.password) {
-            errors.password = 'Password is required';
-            isValid = false;
-        } else if (formValues.password.length < 6) {
-            errors.password = 'Password must be at least 6 characters';
-            isValid = false;
-        }
-
-        if (!formValues.confirmPassword) {
-            errors.confirmPassword = 'Confirm Password is required';
-            isValid = false;
-        } else if (formValues.password !== formValues.confirmPassword) {
-            errors.confirmPassword = 'Passwords do not match';
-            isValid = false;
-        }
-
+        const errors = validateForm(formValues, registerFields);
         setFormErrors(errors);
-        return isValid;
+        return Object.keys(errors).length === 0;
     };
 
     const handleRegister = async () => {
         if (!validate()) {
             return;
         }
-
         try {
             setLoading(true);
             await register(formValues.name, formValues.email, formValues.password);
@@ -103,7 +64,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     return (
         <KeyboardAvoidingView
             style={[styles.container, { backgroundColor: colors.background }]}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
         >
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.content}>
@@ -118,17 +79,12 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
                             onChange={handleFieldChange}
                         />
 
-                        <TouchableOpacity
-                            style={[styles.registerButton, { backgroundColor: colors.primary }]}
+                        <Button
+                            title={loading ? "Creating Account..." : "Sign Up"}
                             onPress={handleRegister}
                             disabled={loading}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color="#fff" />
-                            ) : (
-                                <ThemeText style={styles.registerButtonText}>Sign Up</ThemeText>
-                            )}
-                        </TouchableOpacity>
+                            style={{ backgroundColor: colors.primary, marginTop: 8, marginBottom: 16 }}
+                        />
 
                         <View style={styles.loginContainer}>
                             <ThemeText style={[styles.loginText, { color: colors.textSecondary }]}>Already have an account? </ThemeText>
@@ -168,27 +124,7 @@ const styles = StyleSheet.create({
     form: {
         width: '100%',
     },
-    registerButton: {
-        borderRadius: 12,
-        height: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 8,
-        marginBottom: 16,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    registerButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '600',
-    },
+
     loginContainer: {
         flexDirection: 'row',
         justifyContent: 'center',

@@ -7,15 +7,14 @@ import {
     Platform,
     Alert,
     ScrollView,
-    ActivityIndicator,
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/types';
 import { useAuth, useTheme } from '../context';
 import ThemeText from '../components/Text';
 import { Ionicons } from '@expo/vector-icons';
-import { DynamicForm } from '../components';
-import { loginFields } from '../utils';
+import { DynamicForm, Button } from '../components';
+import { loginFields, validateForm } from '../utils';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 interface LoginScreenProps {
@@ -41,27 +40,9 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     };
 
     const validate = () => {
-        let isValid = true;
-        const errors: Record<string, string> = {};
-
-        if (!formValues.email) {
-            errors.email = 'Email is required';
-            isValid = false;
-        } else if (!/\S+@\S+\.\S+/.test(formValues.email)) {
-            errors.email = 'Please enter a valid email';
-            isValid = false;
-        }
-
-        if (!formValues.password) {
-            errors.password = 'Password is required';
-            isValid = false;
-        } else if (formValues.password.length < 6) {
-            errors.password = 'Password must be at least 6 characters';
-            isValid = false;
-        }
-
+        const errors = validateForm(formValues, loginFields);
         setFormErrors(errors);
-        return isValid;
+        return Object.keys(errors).length === 0;
     };
 
     const handleLogin = async () => {
@@ -82,7 +63,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
     return (
         <KeyboardAvoidingView
             style={[styles.container, { backgroundColor: colors.background }]}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
         >
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
@@ -108,26 +89,23 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
                         <ThemeText style={[styles.forgotPasswordText, { color: colors.primary }]}>Forgot Password?</ThemeText>
                     </TouchableOpacity>
 
-                    <TouchableOpacity
-                        style={[styles.loginButton, { backgroundColor: colors.primary }]}
+                    <Button
+                        title={loading ? "Logging in..." : "Login"}
                         onPress={handleLogin}
                         disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="#fff" />
-                        ) : (
-                            <ThemeText style={styles.loginButtonText}>Login</ThemeText>
-                        )}
-                    </TouchableOpacity>
+                        style={{ backgroundColor: colors.primary, marginBottom: 16 }}
+                    />
 
-                    <TouchableOpacity
-                        style={[styles.createAccountButton, { borderColor: colors.primary }]}
+                    <Button
+                        title="Create Account"
                         onPress={() => navigation.navigate('Register')}
-                    >
-                        <ThemeText style={[styles.createAccountText, { color: colors.primary }]}>Create Account</ThemeText>
-                    </TouchableOpacity>
+                        variant="outline"
+                        style={{ borderColor: colors.primary }}
+                        textStyle={{ color: colors.primary }}
+                    />
                 </View>
             </ScrollView>
+
         </KeyboardAvoidingView>
     );
 };
@@ -173,29 +151,6 @@ const styles = StyleSheet.create({
     form: {
         width: '100%',
     },
-    inputContainer: {
-        marginBottom: 16,
-    },
-    inputLabel: {
-        marginBottom: 8,
-        fontWeight: '500',
-    },
-    inputWrapper: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        borderRadius: 5,
-        borderWidth: 1,
-        paddingHorizontal: 12,
-        height: 50,
-    },
-    inputIcon: {
-        marginRight: 10,
-    },
-    input: {
-        flex: 1,
-        fontSize: 16,
-        height: '100%',
-    },
     forgotPassword: {
         alignSelf: 'flex-end',
         marginBottom: 24,
@@ -204,38 +159,8 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
     },
-    loginButton: {
-        borderRadius: 12,
-        height: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 16,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    loginButtonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '600',
-    },
-    createAccountButton: {
-        borderRadius: 12,
-        height: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        backgroundColor: 'transparent',
-    },
-    createAccountText: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
+
+
 });
 
 export default LoginScreen;

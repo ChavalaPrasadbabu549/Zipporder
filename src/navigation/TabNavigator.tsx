@@ -1,5 +1,6 @@
 import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { DrawerActions } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { MainTabParamList } from './types';
 import { useTheme } from '../context';
@@ -34,14 +35,7 @@ const TabNavigator: React.FC = () => {
                         color={colors.text}
                         style={{ marginLeft: 16 }}
                         onPress={() => {
-                            // Ensure drawer exists before opening to avoid crash
-                            // navigation.openDrawer(); only works if drawer is present
-                            // For now, we just log or alert if no drawer
-                            if ((navigation as any).openDrawer) {
-                                (navigation as any).openDrawer();
-                            } else {
-                                console.warn("No drawer navigator found");
-                            }
+                            navigation.dispatch(DrawerActions.openDrawer());
                         }}
                     />
                 ),
@@ -68,9 +62,9 @@ const TabNavigator: React.FC = () => {
                 },
             })}
         >
-            <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Home' }} />
-            <Tab.Screen name="Orders" component={OrdersScreen} options={{ title: 'Orders' }} />
-            <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile' }} />
+            <Tab.Screen name="Home" component={HomeScreen} options={{ title: 'Home', headerShown: false }} />
+            <Tab.Screen name="Orders" component={OrdersScreen} options={{ title: 'Orders', headerShown: false }} />
+            <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: 'Profile', headerShown: false }} />
         </Tab.Navigator>
     );
 };

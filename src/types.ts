@@ -46,6 +46,7 @@ export interface ButtonProps {
     variant?: 'primary' | 'secondary' | 'outline';
     disabled?: boolean;
     style?: ViewStyle;
+    textStyle?: TextStyle;
 }
 
 //  ===== Form Interfaces   =====
@@ -118,4 +119,14 @@ export interface Order {
     date: string;
     status: 'pending' | 'delivered' | 'cancelled';
     amount: string;
+}
+//  ===== Video Card Interfaces   =====
+export interface VideoCardProps {
+    item: {
+        id: string;
+        title: string;
+        duration: string;
+        thumbnail: string;
+        video: string;
+    };
 }

@@ -9,12 +9,10 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/types';
-import { DynamicForm } from '../components';
-import { forgotPasswordFields } from '../utils';
+import { DynamicForm, Button } from '../components';
+import { forgotPasswordFields, validateForm } from '../utils';
 import ThemeText from '../components/Text';
 import { useTheme } from '../context';
-import { isValidEmail } from '../utils/validators';
-import { TouchableOpacity, ActivityIndicator } from 'react-native';
 
 type ForgotPasswordScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'ForgotPassword'>;
 interface ForgotPasswordScreenProps {
@@ -36,14 +34,9 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({ navigation 
     };
 
     const handleResetPassword = async () => {
-        // Validate email
-        if (!formValues.email) {
-            setFormErrors({ email: 'Email is required' });
-            return;
-        }
-
-        if (!isValidEmail(formValues.email)) {
-            setFormErrors({ email: 'Please enter a valid email address' });
+        const errors = validateForm(formValues, forgotPasswordFields);
+        if (Object.keys(errors).length > 0) {
+            setFormErrors(errors);
             return;
         }
 
@@ -69,7 +62,7 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({ navigation 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
             <KeyboardAvoidingView
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
                 style={styles.container}
             >
                 <View style={styles.content}>
@@ -86,25 +79,20 @@ const ForgotPasswordScreen: React.FC<ForgotPasswordScreenProps> = ({ navigation 
                     />
 
                     <View style={styles.buttonContainer}>
-                        <TouchableOpacity
-                            style={[styles.button, { backgroundColor: colors.primary }]}
+                        <Button
+                            title={loading ? "Sending..." : "Send Reset Link"}
                             onPress={handleResetPassword}
                             disabled={loading}
-                        >
-                            {loading ? (
-                                <ActivityIndicator color="#fff" />
-                            ) : (
-                                <ThemeText style={styles.buttonText}>Send Reset Link</ThemeText>
-                            )}
-                        </TouchableOpacity>
+                            style={{ backgroundColor: colors.primary, marginBottom: 16 }}
+                        />
 
-                        <TouchableOpacity
-                            style={[styles.backButton, { borderColor: colors.primary }]}
+                        <Button
+                            title="Back to Login"
                             onPress={() => navigation.goBack()}
-                            disabled={loading}
-                        >
-                            <ThemeText style={[styles.backButtonText, { color: colors.primary }]}>Back to Login</ThemeText>
-                        </TouchableOpacity>
+                            variant="outline"
+                            style={{ borderColor: colors.primary }}
+                            textStyle={{ color: colors.primary }}
+                        />
                     </View>
                 </View>
             </KeyboardAvoidingView>
@@ -140,38 +128,7 @@ const styles = StyleSheet.create({
         marginTop: 24,
         gap: 16,
     },
-    button: {
-        borderRadius: 12,
-        height: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: 16,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 0,
-            height: 2,
-        },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.84,
-        elevation: 5,
-    },
-    buttonText: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '600',
-    },
-    backButton: {
-        borderRadius: 12,
-        height: 50,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
-        backgroundColor: 'transparent',
-    },
-    backButtonText: {
-        fontSize: 16,
-        fontWeight: '600',
-    },
+
 });
 
 export default ForgotPasswordScreen;

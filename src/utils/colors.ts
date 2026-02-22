@@ -3,8 +3,8 @@
 const palette = {
   // Brand Colors
   primary: '#FF004D', // bas
-  primaryDark: '#4338CA', // Indigo 700
-  authentication: '#6366F1', // Indigo 500
+  primaryDark: '#FF004D', // Indigo 700
+  authentication: '#FF004D', // Indigo 500
   secondary: '#EC4899', // Pink 500 - Playful accent
   accent: '#10B981', // Emerald 500 - Success/Go
 
