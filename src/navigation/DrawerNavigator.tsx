@@ -13,7 +13,7 @@ const Drawer = createDrawerNavigator<DrawerParamList>();
 function CustomDrawerContent(props: any) {
     const { colors, toggleTheme, isDark } = useTheme();
     const dispatch = useAppDispatch();
-    const { user } = useAppSelector((state) => state.auth);
+    const { user } = useAppSelector((state: any) => state.auth);
 
     return (
         <DrawerContentScrollView

@@ -130,3 +130,30 @@ export interface VideoCardProps {
         video: string;
     };
 }
+
+
+export interface User {
+    // id: number;
+    phone_number: string;
+    email: string;
+    dob: string;
+    location: string;
+    created_at: string;
+    updated_at: string;
+}
+
+export interface AuthState {
+    user: User | null;
+    token: string | null;
+    loading: boolean;
+    error: string | null;
+    isAuthenticated: boolean;
+}
+
+export const initialState: AuthState = {
+    user: null,
+    token: null,
+    loading: false,
+    error: null,
+    isAuthenticated: false,
+};

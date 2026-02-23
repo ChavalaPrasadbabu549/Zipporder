@@ -13,7 +13,7 @@ interface ProfileScreenProps {
 const ProfileScreen: React.FC<ProfileScreenProps> = ({ navigation: propNav }) => {
     const navigation = useNavigation<any>();
     const { colors, isDark } = useTheme();
-    const { user } = useAppSelector((state) => state.auth);
+    const { user } = useAppSelector((state: any) => state.auth);
 
     const displayName = user?.email?.split('@')[0] || 'Guest';
     const initials = displayName.substring(0, 2).toUpperCase();

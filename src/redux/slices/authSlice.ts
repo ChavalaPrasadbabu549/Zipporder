@@ -1,39 +1,13 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { initialState } from '../../types';
 
-const BASE_URL = 'https://backend-dev.zipporder.com';
-
-interface User {
-    id: number;
-    phone_number: string;
-    email: string;
-    dob: string;
-    location: string;
-    created_at: string;
-    updated_at: string;
-}
-
-interface AuthState {
-    user: User | null;
-    token: string | null;
-    loading: boolean;
-    error: string | null;
-    isAuthenticated: boolean;
-}
-
-const initialState: AuthState = {
-    user: null,
-    token: null,
-    loading: false,
-    error: null,
-    isAuthenticated: false,
-};
 
 export const login = createAsyncThunk(
     'auth/login',
     async (credentials: any, { rejectWithValue }) => {
         try {
-            const response = await axios.post(`${BASE_URL}/users/login`, credentials);
+            const response = await axios.post(`${process.env.BASE_URL}/users/login`, credentials);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Login failed');
@@ -45,7 +19,7 @@ export const register = createAsyncThunk(
     'auth/register',
     async (userData: any, { rejectWithValue }) => {
         try {
-            const response = await axios.post(`${BASE_URL}/users`, userData);
+            const response = await axios.post(`${process.env.BASE_URL}/users`, userData);
             return response.data;
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Registration failed');
