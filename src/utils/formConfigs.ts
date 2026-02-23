@@ -2,15 +2,6 @@ import { FormFieldConfig } from '../types';
 
 export const registerFields: FormFieldConfig[] = [
     {
-        name: 'name',
-        label: 'Full Name',
-        placeholder: 'Full Name',
-        type: 'text',
-        icon: 'person',
-        required: true,
-        autoCapitalize: 'words',
-    },
-    {
         name: 'email',
         label: 'Email',
         placeholder: 'Email',
@@ -19,14 +10,31 @@ export const registerFields: FormFieldConfig[] = [
         required: true,
         autoCapitalize: 'none',
     },
-    // {
-    //     name: 'phone',
-    //     label: 'Phone Number',
-    //     placeholder: 'Phone Number',
-    //     type: 'number',
-    //     icon: 'call',
-    //     required: true,
-    // },
+    {
+        name: 'phone_number',
+        label: 'Phone Number',
+        placeholder: 'Phone Number',
+        type: 'number',
+        icon: 'call',
+        required: true,
+    },
+    {
+        name: 'dob',
+        label: 'Date of Birth',
+        placeholder: 'YYYY-MM-DD',
+        type: 'text',
+        icon: 'calendar',
+        required: true,
+    },
+    {
+        name: 'location',
+        label: 'Location',
+        placeholder: 'City, State',
+        type: 'text',
+        icon: 'location',
+        required: true,
+        autoCapitalize: 'words',
+    },
     {
         name: 'password',
         label: 'Password',

@@ -1,16 +1,18 @@
 import React from 'react';
+import { Provider } from 'react-redux';
 import { NavigationContainer } from '@react-navigation/native';
 import { RootNavigator } from './src/navigation';
-import { AuthProvider, ThemeProvider } from './src/context';
+import { ThemeProvider } from './src/context';
+import { store } from './src/redux';
 
 export default function App() {
   return (
-    <AuthProvider>
+    <Provider store={store}>
       <ThemeProvider>
         <NavigationContainer>
           <RootNavigator />
         </NavigationContainer>
       </ThemeProvider>
-    </AuthProvider>
+    </Provider>
   );
 }

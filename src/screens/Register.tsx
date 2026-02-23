@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     StyleSheet,
@@ -10,10 +10,11 @@ import {
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/types';
-import { useAuth, useTheme } from '../context';
+import { useTheme } from '../context';
 import ThemeText from '../components/Text';
 import { DynamicForm, Button } from '../components';
 import { registerFields, validateForm } from '../utils';
+import { useAppDispatch, useAppSelector, register, clearError } from '../redux';
 
 type RegisterScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Register'>;
 
@@ -23,16 +24,25 @@ interface RegisterScreenProps {
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
     const [formValues, setFormValues] = useState<Record<string, string>>({
-        name: '',
         email: '',
-        phone: '',
+        phone_number: '',
+        dob: '',
+        location: '',
         password: '',
         confirmPassword: '',
     });
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState(false);
-    const { register } = useAuth();
+
+    const dispatch = useAppDispatch();
+    const { loading, error } = useAppSelector((state) => state.auth);
     const { colors } = useTheme();
+
+    useEffect(() => {
+        if (error) {
+            Alert.alert('Registration Failed', error);
+            dispatch(clearError());
+        }
+    }, [error]);
 
     const handleFieldChange = (name: string, value: string) => {
         setFormValues(prev => ({ ...prev, [name]: value }));
@@ -51,14 +61,14 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
         if (!validate()) {
             return;
         }
-        try {
-            setLoading(true);
-            await register(formValues.name, formValues.email, formValues.password);
-        } catch (error) {
-            Alert.alert('Error', 'Registration failed. Please try again.');
-        } finally {
-            setLoading(false);
-        }
+        // Send only the fields the API expects (exclude confirmPassword)
+        dispatch(register({
+            phone_number: formValues.phone_number,
+            email: formValues.email,
+            password: formValues.password,
+            dob: formValues.dob,
+            location: formValues.location,
+        }));
     };
 
     return (
@@ -124,7 +134,6 @@ const styles = StyleSheet.create({
     form: {
         width: '100%',
     },
-
     loginContainer: {
         flexDirection: 'row',
         justifyContent: 'center',

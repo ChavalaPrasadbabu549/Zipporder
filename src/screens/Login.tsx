@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     View,
     StyleSheet,
@@ -10,11 +10,12 @@ import {
 } from 'react-native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { AuthStackParamList } from '../navigation/types';
-import { useAuth, useTheme } from '../context';
+import { useTheme } from '../context';
 import ThemeText from '../components/Text';
 import { Ionicons } from '@expo/vector-icons';
 import { DynamicForm, Button } from '../components';
 import { loginFields, validateForm } from '../utils';
+import { useAppDispatch, useAppSelector, login, clearError } from '../redux';
 
 type LoginScreenNavigationProp = NativeStackNavigationProp<AuthStackParamList, 'Login'>;
 interface LoginScreenProps {
@@ -27,13 +28,20 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         password: '',
     });
     const [formErrors, setFormErrors] = useState<Record<string, string>>({});
-    const [loading, setLoading] = useState(false);
-    const { login } = useAuth();
+
+    const dispatch = useAppDispatch();
+    const { loading, error } = useAppSelector((state) => state.auth);
     const { colors } = useTheme();
+
+    useEffect(() => {
+        if (error) {
+            Alert.alert('Login Failed', error);
+            dispatch(clearError());
+        }
+    }, [error]);
 
     const handleFieldChange = (name: string, value: string) => {
         setFormValues(prev => ({ ...prev, [name]: value }));
-        // Clear error when user types
         if (formErrors[name]) {
             setFormErrors(prev => ({ ...prev, [name]: '' }));
         }
@@ -49,15 +57,7 @@ const LoginScreen: React.FC<LoginScreenProps> = ({ navigation }) => {
         if (!validate()) {
             return;
         }
-
-        try {
-            setLoading(true);
-            await login(formValues.email, formValues.password);
-        } catch (error) {
-            Alert.alert('Error', 'Login failed. Please try again.');
-        } finally {
-            setLoading(false);
-        }
+        dispatch(login({ email: formValues.email, password: formValues.password }));
     };
 
     return (
@@ -159,8 +159,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
     },
-
-
 });
 
 export default LoginScreen;

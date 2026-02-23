@@ -5,13 +5,15 @@ import { Ionicons } from '@expo/vector-icons';
 import TabNavigator from './TabNavigator';
 import ThemedText from '../components/Text';
 import { DrawerParamList } from './types';
-import { useAuth, useTheme } from '../context';
+import { useTheme } from '../context';
+import { useAppDispatch, useAppSelector, logout } from '../redux';
 import { OrdersScreen, ProfileScreen, SettingsScreen } from '../screens';
 
 const Drawer = createDrawerNavigator<DrawerParamList>();
 function CustomDrawerContent(props: any) {
     const { colors, toggleTheme, isDark } = useTheme();
-    const { logout, user } = useAuth();
+    const dispatch = useAppDispatch();
+    const { user } = useAppSelector((state) => state.auth);
 
     return (
         <DrawerContentScrollView
@@ -21,11 +23,11 @@ function CustomDrawerContent(props: any) {
             <View style={[styles.drawerHeader, { borderBottomColor: colors.border }]}>
                 <View style={[styles.avatar, { backgroundColor: colors.primary }]}>
                     <ThemedText style={styles.avatarText}>
-                        {user?.name ? user.name.charAt(0).toUpperCase() : 'JD'}
+                        {user?.email ? user.email.charAt(0).toUpperCase() : 'G'}
                     </ThemedText>
                 </View>
-                <ThemedText style={styles.name}>{user?.name || 'John Doe'}</ThemedText>
-                <ThemedText style={styles.email}>{user?.email || 'john.doe@example.com'}</ThemedText>
+                <ThemedText style={styles.name}>{user?.email?.split('@')[0] || 'Guest'}</ThemedText>
+                <ThemedText style={styles.email}>{user?.email || 'N/A'}</ThemedText>
             </View>
 
             <View style={{ flex: 1, paddingTop: 10 }}>
@@ -85,7 +87,7 @@ function CustomDrawerContent(props: any) {
                     label="Sign Out"
                     icon={({ color, size }) => <Ionicons name="log-out-outline" size={size} color={color} />}
                     onPress={() => {
-                        logout();
+                        dispatch(logout());
                     }}
                     labelStyle={{ color: colors.text }}
                     inactiveTintColor={colors.text}
